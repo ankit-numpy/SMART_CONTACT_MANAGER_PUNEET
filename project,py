@@ -1,0 +1,109 @@
+# Setup Database
+
+import sqlite3  # mysql.connector jaisa connector hai-
+
+# Connect to SQLite database
+conn = sqlite3.connect('contacts.db')
+
+# Create a cursor
+c = conn.cursor()
+
+# Create contacts table
+c.execute('''CREATE TABLE IF NOT EXISTS contacts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                phone TEXT NOT NULL,
+                email TEXT)''')
+
+# Commit changes and close the connection
+conn.commit()
+conn.close()
+
+# Function for add contact-
+def add_contact(name, phone, email):
+    conn = sqlite3.connect('contacts.db')
+    c = conn.cursor()
+    c.execute("INSERT INTO contacts (name, phone, email) VALUES (?, ?, ?)", (name, phone, email))
+    conn.commit()
+    conn.close()
+    print(f"Contact {name} added.")
+
+#function to view contacts-
+def view_contacts():
+    conn = sqlite3.connect('contacts.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM contacts")
+    contacts = c.fetchall()
+    conn.close()
+    for contact in contacts:
+        print(contact)
+
+# function to search contact-    
+def search_contact(name):
+    conn = sqlite3.connect('contacts.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM contacts WHERE name LIKE ?", ('%' + name + '%',))
+    contacts = c.fetchall()
+    conn.close()
+    for contact in contacts:
+        print(contact)
+        
+# function to update contacts-
+def update_contact(contact_id, name, phone, email):
+    conn = sqlite3.connect('contacts.db')
+    c = conn.cursor()
+    c.execute("UPDATE contacts SET name = ?, phone = ?, email = ? WHERE id = ?", (name, phone, email, contact_id))
+    conn.commit()
+    conn.close()
+    print(f"Contact ID {contact_id} updated.")
+
+# function to delete contact-
+def delete_contact(contact_id):
+    conn = sqlite3.connect('contacts.db')
+    c = conn.cursor()
+    c.execute("DELETE FROM contacts WHERE id = ?", (contact_id,))
+    conn.commit()
+    conn.close()
+    print(f"Contact ID {contact_id} deleted.")  
+    
+# main function-
+def main():
+    while True:
+        print("\nContact Management System")
+        print("1. Add a new contact")
+        print("2. View all contacts")
+        print("3. Search for a contact by name")
+        print("4. Update a contact's details")
+        print("5. Delete a contact")
+        print("6. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            name = input("Enter name: ")
+            phone = input("Enter phone: ")
+            email = input("Enter email: ")
+            add_contact(name, phone, email)
+        elif choice == '2':
+            view_contacts()
+        elif choice == '3':
+            name = input("Enter name to search: ")
+            search_contact(name)
+        elif choice == '4':
+            contact_id = input("Enter contact ID to update: ")
+            name = input("Enter new name: ")
+            phone = input("Enter new phone: ")
+            email = input("Enter new email: ")
+            update_contact(contact_id, name, phone, email)
+        elif choice == '5':
+            contact_id = input("Enter contact ID to delete: ")
+            delete_contact(contact_id)
+        elif choice == '6':
+            break
+        else:
+                print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
+
+    # streamlit is a library used for interface, web application-
